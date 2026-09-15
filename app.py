@@ -193,6 +193,7 @@ def group_widgets(tournament):
         "s[bgover]": "eeeeffb0",
         "s[bghead]": "eeeeffff",
         "s[wrap]": "false",
+        "lang": "de",
     }
     widgets = []
     for group in range(group_count):
@@ -241,6 +242,7 @@ def matches_widget_url(start, end, tournament_id, final_round):
         "s[ehrtop]": 9,
         "s[ehrbottom]": 3,
         "s[wrap]": "false",
+        "lang": "de",
     }
     flags = "&se&sp&sbr" if final_round else "&sbr"
     return "https://www.meinturnierplan.de/displayMatches.php?" + urlencode(params) + flags
