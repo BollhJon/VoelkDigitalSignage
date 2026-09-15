@@ -202,8 +202,8 @@ def group_widgets(tournament):
         widgets.append({
             "group": group,
             "label": group_label(group),
-            "table_url": "https://www.meinturnierplan.ch/displayTable.php?" + urlencode(table) + "&sbr",
-            "matches_url": "https://www.meinturnierplan.ch/displayMatches.php?" + urlencode(matches) + "&sbr",
+            "table_url": "https://www.meinturnierplan.de/displayTable.php?" + urlencode(table) + "&sbr",
+            "matches_url": "https://www.meinturnierplan.de/displayMatches.php?" + urlencode(matches) + "&sbr",
         })
     return widgets
 
@@ -243,7 +243,7 @@ def matches_widget_url(start, end, tournament_id, final_round):
         "s[wrap]": "false",
     }
     flags = "&se&sp&sbr" if final_round else "&sbr"
-    return "https://www.meinturnierplan.ch/displayMatches.php?" + urlencode(params) + flags
+    return "https://www.meinturnierplan.de/displayMatches.php?" + urlencode(params) + flags
 
 
 def matches_pages(tournament):
