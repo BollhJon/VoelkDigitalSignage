@@ -23,6 +23,8 @@ TOURNAMENT_DISPLAY_DURATION_SECONDS = 10
 MATCHES_PER_PAGE = 20
 FINAL_MATCHES_PER_PAGE = 10
 # Tournament Infos
+SIGNAGE_TOURNAMENT_IDS = []
+SIGNAGE_MODE = ""
 tournaments = []
 mode = "TURNIER"
 
@@ -288,10 +290,16 @@ def matches_allpages(tournaments):
     return pages
 
 
+@app.before_request
+def before_request():
+    if tournaments == []:
+        for id in SIGNAGE_TOURNAMENT_IDS:
+            tournaments.append(tournament_infos(id))
+
 @app.get("/")
 def presentation_index():
     # Startup Mode
-    if tournaments != [] and mode == "TURNIER":
+    if tournaments != [] and SIGNAGE_MODE == "TURNIER":
         return redirect("/turnier")
     else:
         return redirect("/sponsoring")
@@ -358,23 +366,13 @@ def health():
 
 
 if __name__ == "__main__":
-    # START MODE
-    try: 
-        mode = os.environ.get("SIGNAGE_MODE")
-        #mode = os.environ.get("SIGNAGE_MODE", "TURNIER")
-    except:
-        mode = "TURNIER"
-    
-    # Spielplan Infos
-    try: 
-        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS").split(';')
+    SIGNAGE_MODE = os.environ.get("SIGNAGE_MODE", "TURNIER")
+    try:
         SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
+        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS").split(';')
         #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
-
-        for id in SIGNAGE_TOURNAMENT_IDS:
-            tournaments.append(tournament_infos(id))
     except:
-        tournaments = []
+        pass
 
     print(tournaments)
     app.run(host="127.0.0.1", port=8000)
