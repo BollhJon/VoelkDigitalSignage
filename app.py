@@ -366,10 +366,7 @@ def health():
 
 
 if __name__ == "__main__":
-    with open("config.json", "r", encoding="utf-8") as file:
-        config = json.load(file)
-
-        SIGNAGE_TOURNAMENT_IDS = config.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(";")
-        SIGNAGE_MODE = config.get("SIGNAGE_MODE", "TURNIER")
+    SIGNAGE_TOURNAMENT_IDS = ["0jj2i6bso4"]
+    SIGNAGE_MODE = "TURNIER"
 
     app.run(host="127.0.0.1", port=8000)
