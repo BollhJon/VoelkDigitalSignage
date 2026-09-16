@@ -292,6 +292,10 @@ def matches_allpages(tournaments):
 
 @app.before_request
 def before_request():
+    if SIGNAGE_TOURNAMENT_IDS == []:
+        SIGNAGE_TOURNAMENT_IDS = ["0jj2i6bso4"]
+    if SIGNAGE_MODE == "":
+        SIGNAGE_MODE = "TURNIER"
     if tournaments == []:
         for id in SIGNAGE_TOURNAMENT_IDS:
             tournaments.append(tournament_infos(id))
@@ -366,7 +370,4 @@ def health():
 
 
 if __name__ == "__main__":
-    SIGNAGE_TOURNAMENT_IDS = ["0jj2i6bso4"]
-    SIGNAGE_MODE = "TURNIER"
-
     app.run(host="127.0.0.1", port=8000)
