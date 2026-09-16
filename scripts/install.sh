@@ -15,9 +15,8 @@ sudo apt-get install -y git python3 python3-venv chromium-browser
 
 echo "Setup Virtual Enviroment and install/update pyhton packages"
 python3 -m venv "$INSTALL_DIR/.venv"
-source "$INSTALL_DIR/.venv/bin/activate"
-pip install --upgrade pip
-pip install -r "$INSTALL_DIR/requirements.txt"
+"$INSTALL_DIR/.venv/bin/python" -m pip install --upgrade pip
+"$INSTALL_DIR/.venv/bin/python" -m pip install -r "$INSTALL_DIR/requirements.txt"
 
 echo "Setup Server Service"
 sudo install -m 644 "$INSTALL_DIR/deploy/signage.service" /etc/systemd/system/signage.service
