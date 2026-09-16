@@ -1,6 +1,5 @@
 import os
 import re
-import json
 import html
 from pathlib import Path
 from urllib.parse import urlencode
@@ -24,8 +23,8 @@ TOURNAMENT_DISPLAY_DURATION_SECONDS = 10
 MATCHES_PER_PAGE = 20
 FINAL_MATCHES_PER_PAGE = 10
 # Tournament Infos
-SIGNAGE_TOURNAMENT_IDS = "0jj2i6bso4".split(";")
-SIGNAGE_MODE = "TURNIER"
+SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
+SIGNAGE_MODE = os.environ.get("SIGNAGE_MODE", "TURNIER")
 
 tournaments = []
 

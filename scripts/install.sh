@@ -7,6 +7,8 @@ SERVICE_USER="${SUDO_USER:-$USER}"
 echo "Update local repository"
 git -C "$INSTALL_DIR" pull
 
+bash "$INSTALL_DIR/scripts/configure_envoirment.sh"
+
 echo "System install/update git, python and chromium-browser"
 sudo apt-get update
 sudo apt-get install -y git python3 python3-venv chromium-browser
