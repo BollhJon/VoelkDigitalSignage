@@ -371,8 +371,8 @@ if __name__ == "__main__":
         SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
         #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS").split(';')
         #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
+        print(SIGNAGE_TOURNAMENT_IDS)
     except:
         pass
 
-    print(tournaments)
     app.run(host="127.0.0.1", port=8000)
