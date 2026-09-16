@@ -3,6 +3,7 @@
 set -Eeuo pipefail
 
 ENV_FILE="/etc/environment"
+SERVICE_ENV_FILE="/etc/voelk-signage.env"
 
 # ======================================
 # Fehlerbehandlung
@@ -31,6 +32,10 @@ fi
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Hinweis: $ENV_FILE existiert noch nicht."
     sudo touch "$ENV_FILE"
+fi
+if [[ ! -f "$SERVICE_ENV_FILE" ]]; then
+    echo "Hinweis: $SERVICE_ENV_FILE existiert noch nicht."
+    sudo touch "$SERVICE_ENV_FILE"
 fi
 
 # ======================================
@@ -229,13 +234,17 @@ done
 # ======================================
 
 BACKUP_FILE="${ENV_FILE}.backup.$(date '+%Y%m%d-%H%M%S')"
+SERVICE_BACKUP_FILE="${SERVICE_ENV_FILE}.backup.$(date '+%Y%m%d-%H%M%S')"
 
 echo
 echo "Erstelle Backup..."
 
 sudo cp -- "$ENV_FILE" "$BACKUP_FILE"
+sudo cp -- "$SERVICE_ENV_FILE" "$SERVICE_BACKUP_FILE"
 
 echo "Backup: $BACKUP_FILE"
+echo "Backup: $SERVICE_BACKUP_FILE"
+
 
 # ======================================
 # Neue /etc/environment erzeugen
@@ -275,6 +284,7 @@ fi
 # ======================================
 
 sudo install -m 644 "$TEMP_FILE" "$ENV_FILE"
+sudo install -m 644 "$TEMP_FILE" "$SERVICE_ENV_FILE"
 
 # ======================================
 # Abschluss
