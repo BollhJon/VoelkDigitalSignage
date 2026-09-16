@@ -293,7 +293,7 @@ def matches_allpages(tournaments):
 @app.before_request
 def before_request():
     if SIGNAGE_TOURNAMENT_IDS == []:
-        SIGNAGE_TOURNAMENT_IDS = ["0jj2i6bso4"]
+        SIGNAGE_TOURNAMENT_IDS = "0jj2i6bso4".split(";")
     if SIGNAGE_MODE == "":
         SIGNAGE_MODE = "TURNIER"
     if tournaments == []:
