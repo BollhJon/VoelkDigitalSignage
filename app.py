@@ -367,8 +367,8 @@ if __name__ == "__main__":
     
     # Spielplan Infos
     try: 
-        SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS").split(';')
-        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
+        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS").split(';')
+        SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
         #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
 
         for id in SIGNAGE_TOURNAMENT_IDS:
