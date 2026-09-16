@@ -1,7 +1,4 @@
-"""Lokaler Webserver fuer die Digital-Signage."""
-
 import os
-import json
 import re
 import html
 from pathlib import Path
@@ -296,9 +293,9 @@ def presentation_index():
     #SINAGE_MODE = os.environ.get("SINAGE_MODE", "SPONSORING")
     SINAGE_MODE = os.environ.get("SINAGE_MODE", "TURNIER")
 
-    if SINAGE_MODE == "TURNIER":
+    if tournaments != [] and SINAGE_MODE == "TURNIER":
         return redirect("/turnier")
-    elif SINAGE_MODE == "SPONSORING":
+    else:
         return redirect("/sponsoring")
 
 
@@ -361,14 +358,14 @@ def sponsoring_presentation():
 def health():
     for id in SINAGE_TOURNAMENT_IDS:
         tournaments.append(tournament_infos(id))
-    mode = os.environ.get("SINAGE_MODE", "TURNIER"), 
+    mode = os.environ.get("SIGNAGE_MODE", "TURNIER"), 
     return [mode, tournaments, sponsor_profiles()]
 
 
 if __name__ == "__main__":
     # Spielplan Infos
-    SINAGE_TOURNAMENT_IDS = os.environ.get("SINAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
-    #SINAGE_TOURNAMENT_IDS = os.environ.get("SINAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
+    SINAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
+    #SINAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
 
     for id in SINAGE_TOURNAMENT_IDS:
         tournaments.append(tournament_infos(id))
