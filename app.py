@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import html
 from pathlib import Path
 from urllib.parse import urlencode
@@ -365,13 +366,10 @@ def health():
 
 
 if __name__ == "__main__":
-    SIGNAGE_MODE = os.environ.get("SIGNAGE_MODE", "TURNIER")
-    try:
-        SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
-        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS").split(';')
-        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
-        print(SIGNAGE_TOURNAMENT_IDS)
-    except:
-        pass
+    with open("config.json", "r", encoding="utf-8") as file:
+        config = json.load(file)
+
+        SIGNAGE_TOURNAMENT_IDS = config.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(";")
+        SIGNAGE_MODE = config.get("SIGNAGE_MODE", "TURNIER")
 
     app.run(host="127.0.0.1", port=8000)

@@ -57,3 +57,10 @@ curl http://127.0.0.1:8000/health
 ```bash
 pkill -o chromium
 ```
+
+## Kiosk schliessen
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart signage.service
+```
