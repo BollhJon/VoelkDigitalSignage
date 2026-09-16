@@ -26,7 +26,6 @@ FINAL_MATCHES_PER_PAGE = 10
 SIGNAGE_TOURNAMENT_IDS = []
 SIGNAGE_MODE = ""
 tournaments = []
-mode = "TURNIER"
 
 def media_entry(path: Path, root: Path):
     return {
@@ -362,7 +361,7 @@ def sponsoring_presentation():
 
 @app.get("/health")
 def health():
-    return [mode, tournaments, sponsor_profiles()]
+    return [SIGNAGE_MODE, SIGNAGE_TOURNAMENT_IDS, tournaments, sponsor_profiles()]
 
 
 if __name__ == "__main__":
