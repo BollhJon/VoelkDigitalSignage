@@ -24,8 +24,9 @@ TOURNAMENT_DISPLAY_DURATION_SECONDS = 10
 MATCHES_PER_PAGE = 20
 FINAL_MATCHES_PER_PAGE = 10
 # Tournament Infos
-SIGNAGE_TOURNAMENT_IDS = []
-SIGNAGE_MODE = ""
+SIGNAGE_TOURNAMENT_IDS = "0jj2i6bso4".split(";")
+SIGNAGE_MODE = "TURNIER"
+
 tournaments = []
 
 def media_entry(path: Path, root: Path):
@@ -292,10 +293,6 @@ def matches_allpages(tournaments):
 
 @app.before_request
 def before_request():
-    if SIGNAGE_TOURNAMENT_IDS == []:
-        SIGNAGE_TOURNAMENT_IDS = "0jj2i6bso4".split(";")
-    if SIGNAGE_MODE == "":
-        SIGNAGE_MODE = "TURNIER"
     if tournaments == []:
         for id in SIGNAGE_TOURNAMENT_IDS:
             tournaments.append(tournament_infos(id))
