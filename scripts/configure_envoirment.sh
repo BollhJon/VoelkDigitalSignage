@@ -1,10 +1,51 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+ENV_FILE="/etc/environment"
+
+# ======================================
+# Fehlerbehandlung
+# ======================================
+
+error_exit() {
+    echo
+    echo "FEHLER: $*" >&2
+    exit 1
+}
+
+trap 'echo; echo "Konfiguration abgebrochen."' INT TERM
+
+# ======================================
+# Root / sudo prüfen
+# ======================================
+
+if ! command -v sudo >/dev/null 2>&1; then
+    error_exit "sudo wurde nicht gefunden."
+fi
+
+if ! sudo -v; then
+    error_exit "sudo-Berechtigung erforderlich."
+fi
+
+if [[ ! -f "$ENV_FILE" ]]; then
+    echo "Hinweis: $ENV_FILE existiert noch nicht."
+    sudo touch "$ENV_FILE"
+fi
+
+# ======================================
+# Header
+# ======================================
+
 echo "======================================"
 echo " Signage Konfiguration"
 echo "======================================"
 echo
 
-# Welche Variablen sollen gesetzt werden?
+# ======================================
+# Welche Variablen?
+# ======================================
+
 echo "Welche Variablen sollen konfiguriert werden?"
 echo "--------------------------------------"
 echo "1) Tournament IDs"
@@ -13,7 +54,7 @@ echo "3) Beide"
 echo
 
 while true; do
-    read -p "Auswahl [1/2/3]: " CONFIG_CHOICE
+    read -r -p "Auswahl [1/2/3]: " CONFIG_CHOICE
 
     case "$CONFIG_CHOICE" in
         1)
@@ -37,12 +78,11 @@ while true; do
     esac
 done
 
-
 # ======================================
 # Tournament IDs
 # ======================================
 
-if [ "$SET_IDS" = true ]; then
+if [[ "$SET_IDS" == true ]]; then
 
     echo
     echo "Tournament IDs eingeben"
@@ -51,34 +91,70 @@ if [ "$SET_IDS" = true ]; then
     IDS=()
 
     while true; do
-        read -p "Tournament ID: " ID
+        read -r -p "Tournament ID: " ID
 
         # Leere Eingaben ignorieren
-        if [ -z "$ID" ]; then
+        if [[ -z "$ID" ]]; then
             echo "Keine ID eingegeben."
+            continue
+        fi
+
+        # Keine Whitespaces erlauben
+        if [[ "$ID" =~ [[:space:]] ]]; then
+            echo "Ungültige ID: Leerzeichen sind nicht erlaubt."
+            continue
+        fi
+
+        # Semikolon verhindern, da es unser Trennzeichen ist
+        if [[ "$ID" == *";"* ]]; then
+            echo "Ungültige ID: ';' ist nicht erlaubt."
+            continue
+        fi
+
+        # ID nur einmal aufnehmen
+        DUPLICATE=false
+
+        for EXISTING_ID in "${IDS[@]}"; do
+            if [[ "$EXISTING_ID" == "$ID" ]]; then
+                DUPLICATE=true
+                break
+            fi
+        done
+
+        if [[ "$DUPLICATE" == true ]]; then
+            echo "Diese ID wurde bereits eingegeben."
             continue
         fi
 
         IDS+=("$ID")
 
-        read -p "Weitere ID hinzufügen? [j/n]: " MORE
+        while true; do
+            read -r -p "Weitere ID hinzufügen? [j/n]: " MORE
 
-        if [[ "$MORE" != "j" && "$MORE" != "J" ]]; then
-            break
-        fi
+            case "${MORE,,}" in
+                j|ja)
+                    break
+                    ;;
+                n|nein)
+                    break 2
+                    ;;
+                *)
+                    echo "Bitte j oder n eingeben."
+                    ;;
+            esac
+        done
     done
 
     # IDs mit ; verbinden
-    TOURNAMENT_IDS=$(IFS=';'; echo "${IDS[*]}")
+    TOURNAMENT_IDS=$(IFS=';'; printf '%s' "${IDS[*]}")
 
 fi
-
 
 # ======================================
 # Start Mode
 # ======================================
 
-if [ "$SET_MODE" = true ]; then
+if [[ "$SET_MODE" == true ]]; then
 
     echo
     echo "Start Mode"
@@ -88,7 +164,7 @@ if [ "$SET_MODE" = true ]; then
     echo
 
     while true; do
-        read -p "Auswahl [1/2]: " MODE_CHOICE
+        read -r -p "Auswahl [1/2]: " MODE_CHOICE
 
         case "$MODE_CHOICE" in
             1)
@@ -107,7 +183,6 @@ if [ "$SET_MODE" = true ]; then
 
 fi
 
-
 # ======================================
 # Zusammenfassung
 # ======================================
@@ -117,50 +192,113 @@ echo "======================================"
 echo " Folgende Konfiguration wird gesetzt:"
 echo "======================================"
 
-if [ "$SET_IDS" = true ]; then
+if [[ "$SET_IDS" == true ]]; then
     echo "SIGNAGE_TOURNAMENT_IDS=$TOURNAMENT_IDS"
 fi
 
-if [ "$SET_MODE" = true ]; then
+if [[ "$SET_MODE" == true ]]; then
     echo "SIGNAGE_MODE=$MODE"
 fi
 
 echo
 
-read -p "Konfiguration speichern? [j/n]: " SAVE
+# ======================================
+# Speichern bestätigen
+# ======================================
 
-if [[ "$SAVE" == "j" || "$SAVE" == "J" ]]; then
+while true; do
+    read -r -p "Konfiguration speichern? [j/n]: " SAVE
 
-    # ==================================
-    # Tournament IDs speichern
-    # ==================================
+    case "${SAVE,,}" in
+        j|ja)
+            break
+            ;;
+        n|nein)
+            echo
+            echo "Konfiguration wurde NICHT gespeichert."
+            exit 0
+            ;;
+        *)
+            echo "Bitte j oder n eingeben."
+            ;;
+    esac
+done
 
-    if [ "$SET_IDS" = true ]; then
-        sudo sed -i '/^SIGNAGE_TOURNAMENT_IDS=/d' /etc/environment
-        echo "SIGNAGE_TOURNAMENT_IDS=$TOURNAMENT_IDS" | sudo tee -a /etc/environment > /dev/null
-    fi
+# ======================================
+# Backup erstellen
+# ======================================
 
+BACKUP_FILE="${ENV_FILE}.backup.$(date '+%Y%m%d-%H%M%S')"
 
-    # ==================================
-    # Start Mode speichern
-    # ==================================
+echo
+echo "Erstelle Backup..."
 
-    if [ "$SET_MODE" = true ]; then
-        sudo sed -i '/^SIGNAGE_MODE=/d' /etc/environment
-        echo "SIGNAGE_MODE=$MODE" | sudo tee -a /etc/environment > /dev/null
-    fi
+sudo cp -- "$ENV_FILE" "$BACKUP_FILE"
 
+echo "Backup: $BACKUP_FILE"
 
-    echo
-    echo "Konfiguration wurde gespeichert."
-    echo
-    echo "Hinweis: Die neuen Umgebungsvariablen werden"
-    echo "für neue Prozesse verfügbar. Eine bereits"
-    echo "laufende Shell muss neu gestartet werden."
+# ======================================
+# Neue /etc/environment erzeugen
+# ======================================
 
-else
+TEMP_FILE=$(mktemp)
 
-    echo
-    echo "Konfiguration wurde NICHT gespeichert."
+cleanup() {
+    rm -f -- "$TEMP_FILE"
+}
 
+trap cleanup EXIT
+
+# Bestehende Datei übernehmen,
+# aber die zu konfigurierenden Variablen entfernen.
+sudo cp -- "$ENV_FILE" "$TEMP_FILE"
+
+if [[ "$SET_IDS" == true ]]; then
+    sed -i '/^[[:space:]]*SIGNAGE_TOURNAMENT_IDS=/d' "$TEMP_FILE"
 fi
+
+if [[ "$SET_MODE" == true ]]; then
+    sed -i '/^[[:space:]]*SIGNAGE_MODE=/d' "$TEMP_FILE"
+fi
+
+# Neue Werte anhängen
+if [[ "$SET_IDS" == true ]]; then
+    printf 'SIGNAGE_TOURNAMENT_IDS=%s\n' "$TOURNAMENT_IDS" >> "$TEMP_FILE"
+fi
+
+if [[ "$SET_MODE" == true ]]; then
+    printf 'SIGNAGE_MODE=%s\n' "$MODE" >> "$TEMP_FILE"
+fi
+
+# ======================================
+# Datei atomar ersetzen
+# ======================================
+
+sudo install -m 644 "$TEMP_FILE" "$ENV_FILE"
+
+# ======================================
+# Abschluss
+# ======================================
+
+echo
+echo "======================================"
+echo " Konfiguration gespeichert"
+echo "======================================"
+echo
+echo "Aktuelle Werte:"
+echo
+
+if [[ "$SET_IDS" == true ]]; then
+    echo "SIGNAGE_TOURNAMENT_IDS=$TOURNAMENT_IDS"
+fi
+
+if [[ "$SET_MODE" == true ]]; then
+    echo "SIGNAGE_MODE=$MODE"
+fi
+
+echo
+echo "Hinweis:"
+echo "Die Änderungen gelten für neue Prozesse."
+echo "Bereits laufende Prozesse übernehmen die"
+echo "neuen Umgebungsvariablen nicht automatisch."
+echo
