@@ -358,12 +358,22 @@ def health():
 
 
 if __name__ == "__main__":
-    mode = os.environ.get("SIGNAGE_MODE", "TURNIER")
+    # START MODE
+    try: 
+        mode = os.environ.get("SIGNAGE_MODE")
+        #mode = os.environ.get("SIGNAGE_MODE", "TURNIER")
+    except:
+        mode = "TURNIER"
+    
     # Spielplan Infos
-    SINAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
-    #SINAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
+    try: 
+        SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS").split(';')
+        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
+        #SIGNAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
 
-    for id in SINAGE_TOURNAMENT_IDS:
-        tournaments.append(tournament_infos(id))
+        for id in SIGNAGE_TOURNAMENT_IDS:
+            tournaments.append(tournament_infos(id))
+    except:
+        tournaments = []
 
     app.run(host="127.0.0.1", port=8000)
