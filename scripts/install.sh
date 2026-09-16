@@ -7,7 +7,7 @@ SERVICE_USER="${SUDO_USER:-$USER}"
 echo "Update local repository"
 git -C "$INSTALL_DIR" pull
 
-sh "$INSTALL_DIR/scripts/configure_envoirment.sh"
+bash "$INSTALL_DIR/scripts/configure_envoirment.sh"
 
 echo "System install/update git, python and chromium-browser"
 sudo apt-get update
