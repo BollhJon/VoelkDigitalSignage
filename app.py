@@ -24,6 +24,7 @@ MATCHES_PER_PAGE = 20
 FINAL_MATCHES_PER_PAGE = 10
 # Tournament Infos
 tournaments = []
+mode = "TURNIER"
 
 def media_entry(path: Path, root: Path):
     return {
@@ -290,10 +291,7 @@ def matches_allpages(tournaments):
 @app.get("/")
 def presentation_index():
     # Startup Mode
-    #SINAGE_MODE = os.environ.get("SINAGE_MODE", "SPONSORING")
-    SINAGE_MODE = os.environ.get("SINAGE_MODE", "TURNIER")
-
-    if tournaments != [] and SINAGE_MODE == "TURNIER":
+    if tournaments != [] and mode == "TURNIER":
         return redirect("/turnier")
     else:
         return redirect("/sponsoring")
@@ -356,13 +354,11 @@ def sponsoring_presentation():
 
 @app.get("/health")
 def health():
-    for id in SINAGE_TOURNAMENT_IDS:
-        tournaments.append(tournament_infos(id))
-    mode = os.environ.get("SIGNAGE_MODE", "TURNIER"), 
     return [mode, tournaments, sponsor_profiles()]
 
 
 if __name__ == "__main__":
+    mode = os.environ.get("SIGNAGE_MODE", "TURNIER")
     # Spielplan Infos
     SINAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "0jj2i6bso4").split(';')
     #SINAGE_TOURNAMENT_IDS = os.environ.get("SIGNAGE_TOURNAMENT_IDS", "1757255205;1757569613").split(';')
